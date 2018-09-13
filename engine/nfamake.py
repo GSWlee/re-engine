@@ -7,12 +7,15 @@ class nfapic:
         self.end = 1
         self.node = [0, 1]
         self.links = [[0, 1, value]]
+        self.chars = [value]
 
     def getnextcahr(self, value):
         index = self.end + 1
         self.end = index
         self.node.append(index)
         self.links.append([index - 1, index, value])
+        if value not in self.chars:
+            self.chars.append(value)
 
     def caseone(self):
         # char==*
@@ -27,7 +30,7 @@ class nfapic:
         self.links.append([self.node[-2], self.node[-1], 'ε'])
         self.links.append([self.start, self.node[-1], 'ε'])
         self.links.append([self.node[-2], self.node[1], 'ε'])
-        self.end=self.node[-1]
+        self.end = self.node[-1]
 
     def casetwo(self):
         # char == ?
@@ -41,14 +44,14 @@ class nfapic:
         self.links.append([0, 1, 'ε'])
         self.links.append([self.node[-2], self.node[-1], 'ε'])
         self.links.append([self.start, self.node[-1], 'ε'])
-        self.end=self.node[-1]
+        self.end = self.node[-1]
 
+    # char ==  |
     def casethree(self, value):
-        # char == |
         tempnode = value.node
         templinks = value.links
         for i in range(len(tempnode)):
-            tempnode[i] += (self.node[-1]+1)
+            tempnode[i] += (self.node[-1] + 1)
         for l in templinks:
             l[0] += (self.node[-1] + 1)
             l[1] += (self.node[-1] + 1)
@@ -63,12 +66,15 @@ class nfapic:
         self.node.append(self.node[-1] + 1)
         self.links.append([0, 1, 'ε'])
         self.links.append([0, self.end + 2, 'ε'])
-        self.links.append([self.end+1, self.node[-1], 'ε'])
+        self.links.append([self.end + 1, self.node[-1], 'ε'])
         self.links.append([self.node[-2], self.node[-1], 'ε'])
         self.end = self.node[-1]
+        for char in value.chars:
+            if char not in self.chars:
+                self.chars.append(char)
 
+    # 两个nfa的连接
     def addnfa(self, value):
-        # 两个nfa的连接
         tempnode = value.node
         templinks = value.links
         for i in range(len(tempnode)):
@@ -76,9 +82,12 @@ class nfapic:
         for l in templinks:
             l[0] += self.node[-1]
             l[1] += self.node[-1]
-        self.node.extend(tempnode)
+        self.node.extend(tempnode[1:])
         self.links.extend(templinks)
         self.end = self.node[-1]
+        for char in value.chars:
+            if char not in self.chars:
+                self.chars.append(char)
 
     def plot(self):
         dot = Digraph()

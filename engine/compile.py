@@ -1,4 +1,5 @@
 from engine import nfamake
+from engine import dfa
 import copy
 constchar = ('*', '+', '[', ']', '?', '\\', '.', '|', '(', ')')
 
@@ -93,3 +94,10 @@ def mknfa(re):
         nfastack = nfastack[1:]
 
     return ans
+
+#将输入的nfa变为dfa
+def mkdfa(nfa):
+    n=dfa.dfapic()
+    n.dfatonfa(nfa)
+    #n.makesimple()
+    return n
